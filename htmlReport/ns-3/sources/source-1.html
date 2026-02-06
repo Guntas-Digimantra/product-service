@@ -1,0 +1,248 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ProductController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.Ecommerce.product_service.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductController (com.Ecommerce.product_service.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/21)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.Ecommerce.product_service.controller;
+&nbsp;
+&nbsp;import com.Ecommerce.product_service.dto.request.ProductRequest;
+&nbsp;import com.Ecommerce.product_service.dto.request.ReduceStockRequest;
+&nbsp;import com.Ecommerce.product_service.dto.request.RestoreStockRequest;
+&nbsp;import com.Ecommerce.product_service.dto.request.UpdateStockRequest;
+&nbsp;import com.Ecommerce.product_service.dto.response.ApiResponse;
+&nbsp;import com.Ecommerce.product_service.dto.response.ProductListResponse;
+&nbsp;import com.Ecommerce.product_service.dto.response.ProductResponse;
+&nbsp;import com.Ecommerce.product_service.dto.response.SearchResponse;
+&nbsp;import com.Ecommerce.product_service.service.ProductService;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.access.prepost.PreAuthorize;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/products&quot;)
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class ProductController {
+&nbsp;    private final ProductService productService;
+&nbsp;
+&nbsp;    @PostMapping
+&nbsp;    @PreAuthorize(&quot;hasAuthority(&#39;CREATE_PRODUCT&#39;)&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;ProductResponse&gt;&gt; createProduct(
+&nbsp;            @Valid @RequestBody ProductRequest request) {
+&nbsp;
+<b class="fc">&nbsp;        ProductResponse product = productService.createProduct(request);</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.status(HttpStatus.CREATED)</b>
+<b class="fc">&nbsp;                .body(new ApiResponse&lt;&gt;(</b>
+&nbsp;                        &quot;Product added successfully&quot;,
+&nbsp;                        product
+&nbsp;                ));
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    @PutMapping(&quot;/{id}/stock&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAuthority(&#39;UPDATE_PRODUCT&#39;)&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;ProductResponse&gt;&gt; updateStock(
+&nbsp;            @PathVariable String id,
+&nbsp;            @Valid @RequestBody UpdateStockRequest request) {
+&nbsp;
+<b class="fc">&nbsp;        ProductResponse updated =</b>
+<b class="fc">&nbsp;                productService.updateStock(id, request.getStock());</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(</b>
+&nbsp;                new ApiResponse&lt;&gt;(
+&nbsp;                        &quot;Stock updated successfully&quot;,
+&nbsp;                        updated
+&nbsp;                )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;ProductResponse&gt; getProductById(
+&nbsp;            @PathVariable String id) {
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(</b>
+<b class="fc">&nbsp;                productService.getProductById(id)</b>
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    public ResponseEntity&lt;ProductListResponse&gt; getAllProducts() {
+&nbsp;
+<b class="fc">&nbsp;        List&lt;ProductResponse&gt; products = productService.getAllProducts();</b>
+&nbsp;
+<b class="fc">&nbsp;        ProductListResponse response = new ProductListResponse(</b>
+<b class="fc">&nbsp;                products.isEmpty() ? &quot;No products found&quot; : &quot;Products fetched successfully&quot;,</b>
+<b class="fc">&nbsp;                products.size(),</b>
+&nbsp;                products
+&nbsp;        );
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(response);</b>
+&nbsp;    }
+&nbsp;    @PutMapping(&quot;/{id}/reduce-stock&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;Void&gt;&gt; reduceStock(
+&nbsp;            @PathVariable String id,
+&nbsp;            @Valid @RequestBody ReduceStockRequest request) {
+&nbsp;
+<b class="fc">&nbsp;        productService.reduceStock(id, request.getQuantity());</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(</b>
+&nbsp;                new ApiResponse&lt;&gt;(&quot;Stock reduced successfully&quot;, null)
+&nbsp;        );
+&nbsp;    }
+&nbsp;    @PutMapping(&quot;/{id}/restore-stock&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;Void&gt;&gt; restoreStock(
+&nbsp;            @PathVariable String id,
+&nbsp;            @RequestBody RestoreStockRequest request) {
+&nbsp;
+<b class="fc">&nbsp;        productService.restoreStock(id, request.getQuantity());</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(</b>
+&nbsp;                new ApiResponse&lt;&gt;(&quot;Stock restored successfully&quot;, null)
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @PreAuthorize(&quot;hasAuthority(&#39;DELETE_PRODUCT&#39;)&quot;)
+&nbsp;    public ResponseEntity&lt;ApiResponse&lt;ProductResponse&gt;&gt; deleteProduct(
+&nbsp;            @PathVariable String id) {
+&nbsp;
+<b class="fc">&nbsp;        ProductResponse deletedProduct = productService.deleteProduct(id);</b>
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(</b>
+&nbsp;                new ApiResponse&lt;&gt;(
+&nbsp;                        &quot;Product deleted successfully&quot;,
+&nbsp;                        deletedProduct
+&nbsp;                )
+&nbsp;        );
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    public ResponseEntity&lt;SearchResponse&lt;ProductResponse&gt;&gt; searchProducts(
+&nbsp;            @RequestParam String keyword) {
+&nbsp;
+<b class="fc">&nbsp;        return ResponseEntity.ok(productService.searchProducts(keyword));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-01-30 15:29</div>
+</div>
+</body>
+</html>
